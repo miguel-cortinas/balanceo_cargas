@@ -1,0 +1,29 @@
+- hosts: ['serv1', 'serv2', 'serv3']
+  become: yes
+  tasks:
+# Instalamos Curl
+  - name: Instalamos curl
+    apt:
+      name: curl
+      state: present
+  - name: Instalamos Docker
+    shell: 'curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh'
+
+# Iniciamos docker 
+  - name: Iniciamos el servicio de Docker por medio del shell
+    shell: 'sudo service docker start'
+    ignore_errors: yes
+
+# Clonamos la apicacion de balanceo 
+  - name: Clonamos el repositorio de la aplicación de balanceo
+    git:
+      repo: https://github.com/miguel-cortinas/balancingapp
+      dest: /home/balancing-app
+
+
+# Ejecutamos el docker compose
+- hosts: ['serv1', 'serv2', 'serv3']
+  become: yes
+  tasks:
+  - name: Acceder a la carpeta con la aplicación de balanceo y ejecutar docker compose
+    shell: 'cd /home/balancing-app && docker compose up -d'

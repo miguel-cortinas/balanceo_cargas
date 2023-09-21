@@ -1,0 +1,30 @@
+# Tomamos la imagen de ubuntu mas reciente
+FROM ubuntu:latest
+WORKDIR /root
+# Instalamos SSH, Ansible,nano y Python3
+RUN apt update 
+RUN apt install -y openssh-server
+RUN apt install -y ansible 
+RUN apt install -y python3
+RUN apt install -y nano
+
+
+
+RUN mkdir /etc/ansible && touch /etc/ansible/hosts
+
+#Reestablecemos el password del usuario root
+RUN echo "root:123456" | chpasswd
+# Eliminamos el archivo de configuracion de SSH
+RUN rm /etc/ssh/sshd_config
+# Creamos el archivo de configuracion de SSH para que nos permita conectarnos como root
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+
+# Creamos el archivo con las llaves publicas autorizadas
+RUN ssh-keygen -t rsa -f /root/.ssh/id_rsa -N ''
+# Generamos nuestras llaves
+RUN touch /root/.ssh/authorized_keys
+
+# Abrimos el puerto 22 para SSH
+EXPOSE 22
+# Arrancamos el servicio SSH 
+CMD service ssh start ; sleep infinity

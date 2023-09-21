@@ -1,0 +1,52 @@
+version: "3.2"
+services: 
+  bastion:
+    tty: true
+    build: 
+      context: .
+      dockerfile: DockerfileBas
+    container_name: bastion-server
+    hostname: bas
+    privileged: true
+    ports:
+      - 22:22
+
+  server-1:
+    tty: true
+    build: 
+      context: .
+      dockerfile: DockerfileServ
+    container_name: server-1
+    hostname: serv1
+    privileged: true
+  server-2:
+    tty: true
+    build: 
+      context: .
+      dockerfile: DockerfileServ
+    container_name: server-2
+    hostname: serv2
+    privileged: true
+  server-3:
+    tty: true
+    build: 
+      context: .
+      dockerfile: DockerfileServ
+    container_name: server-3
+    hostname: serv3
+    privileged: true
+    
+  balanceador:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    depends_on:
+      - server-1
+      - server-2
+      - server-3
+
+
+ 
+    
